@@ -7,6 +7,11 @@ class Base {
     protected shaderProgram: WebGLProgram;
     protected scalingMatrix: number[];
     protected translationMatrix: number[];
+    protected xDegrees: number;
+    protected yDegrees: number;
+    protected zDegrees: number;
+
+    protected static toRadian = (degrees: number): number => degrees * Math.PI / 180;
 
     protected constructor(vertex: string, fragment: string) {
         this.canvas = document.querySelector("#canvas") as HTMLCanvasElement;
@@ -15,6 +20,9 @@ class Base {
 
         this.setScaling();
         this.setTransition();
+        this.setXDegrees();
+        this.setYDegrees();
+        this.setZDegrees();
     }
 
     public createProgram(
@@ -95,7 +103,19 @@ class Base {
         this.translationMatrix = this.multiply(this.identity(), this.translation(tx, ty, tz));
     }
 
-    protected render(): void {
+    public setXDegrees(degrees: number = 0): void {
+        this.xDegrees = degrees;
+    }
+
+    public setYDegrees(degrees: number = 0): void {
+        this.yDegrees = degrees;
+    }
+
+    public setZDegrees(degrees: number = 0): void {
+        this.zDegrees = degrees;
+    }
+
+    protected _render(): void {
         this.resizeCanvasToDisplaySize();
         this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
         this.gl.useProgram(this.shaderProgram);
@@ -180,6 +200,42 @@ class Base {
             0,  0, 0, 1,
         ];
     }
+
+    protected xRotation(degrees: number): number[] {
+        const c = Math.cos(Base.toRadian(degrees));
+        const s = Math.sin(Base.toRadian(degrees));
+
+        return [
+            1, 0, 0, 0,
+            0, c, s, 0,
+            0, -s, c, 0,
+            0, 0, 0, 1,
+        ];
+    }
+
+    protected yRotation(degrees: number): number[] {
+        const c = Math.cos(Base.toRadian(degrees));
+        const s = Math.sin(Base.toRadian(degrees));
+
+        return [
+            c, 0, -s, 0,
+            0, 1, 0, 0,
+            s, 0, c, 0,
+            0, 0, 0, 1,
+        ];
+    }
+
+    protected zRotation(degrees: number): number[] {
+        const c = Math.cos(Base.toRadian(degrees));
+        const s = Math.sin(Base.toRadian(degrees));
+
+        return [
+            c, s, 0, 0,
+            -s, c, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1,
+        ];
+    }
 }
 
 class Render extends Base {
@@ -206,14 +262,17 @@ class Render extends Base {
      * ]
      * count - points count
      */
-    public render2D(buffer: number[], faces: number[], count: number) {
-        super.render();
+    public render(buffer: number[], faces: number[], count: number) {
+        super._render();
 
         this.gl.enableVertexAttribArray(this.a_position);
         this.gl.enableVertexAttribArray(this.a_color);
 
         this.gl.clearColor(0, 0, 0, 0);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+
+        this.gl.enable(this.gl.CULL_FACE);
+        this.gl.enable(this.gl.DEPTH_TEST);
 
         const POSITION_BUFFER = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, POSITION_BUFFER);
@@ -225,8 +284,11 @@ class Render extends Base {
 
         let matrix = this.identity();
 
-        matrix = this.multiply(matrix, this.scalingMatrix);
         matrix = this.multiply(matrix, this.translationMatrix);
+        matrix = this.multiply(matrix, this.xRotation(this.xDegrees));
+        matrix = this.multiply(matrix, this.yRotation(this.yDegrees));
+        matrix = this.multiply(matrix, this.zRotation(this.zDegrees));
+        matrix = this.multiply(matrix, this.scalingMatrix);
 
         this.gl.uniformMatrix4fv(this.u_matrix, false, matrix);
 
@@ -306,12 +368,81 @@ function main(): void {
     cube.init();
     cube.setScaling();
     cube.setTransition();
-    cube.render2D([
-        -0.5, -0.5, 0.0,    1, 0, 0.5,
-        -0.5,  0.5, 0.0,    1, 0, 0.5,
-        0.5,  0.5, 0.0,    1, 0, 0.5,
-        0.5, -0.5, 0.0,    1, 0, 0.5,
-    ], [0, 1, 2, 0, 2, 3], 6);
+    // cube.render([
+    //     -0.5, -0.5, 0,    1, 0, 0.5,
+    //     -0.5,  0.5, 0,    0.1, 0.5, 0.5,
+    //     0.5,  0.5, 0.0,    0.5, 0.8, 0.5,
+    //     0.5, -0.5, 0.0,    0.9, 0.2, 0.5,
+    // ], [2, 1, 0, 3, 2, 0], 6);
+    // cube.setXDegrees(-20);
+    // cube.setYDegrees(-130);
+    const animate = (time: number) => {
+        // console.log(time)
+
+        cube.setXDegrees(0.05 * time * 0.5);
+        // cube.setYDegrees(0.09 * time * 0.7);
+        // cube.setZDegrees(0.08 * time * 0.6);
+
+        cube.render([
+            -0.5, -0.5,  0.5,    1.0, 0.0, 0.5, // 0
+            -0.5,  0.5,  0.5,    1.0, 0.0, 0.5, // 1
+            0.5,  0.5,  0.5,    1.0, 0.0, 0.5, // 2
+            0.5, -0.5,  0.5,    1.0, 0.0, 0.5, // 3
+
+            0.5,  0.5,  0.5,    0.0, 0.5, 1.0, // 4
+            0.5,  0.5, -0.5,    0.0, 0.5, 1.0, // 5
+            -0.5,  0.5,  0.5,    0.0, 0.5, 1.0, // 6
+            -0.5,  0.5, -0.5,    0.0, 0.5, 1.0, // 7
+
+            0.5,  0.5,  0.5,    0.5, 1.0, 0.0, // 8
+            0.5, -0.5,  0.5,    0.5, 1.0, 0.0, // 9
+            0.5,  0.5, -0.5,    0.5, 1.0, 0.0, // 10
+            0.5, -0.5, -0.5,    0.5, 1.0, 0.0, // 11
+
+            -0.5,  0.5,  0.5,    0.5, 0.0, 1.0, // 12
+            -0.5, -0.5,  0.5,    0.5, 0.0, 1.0, // 13
+            -0.5,  0.5, -0.5,    0.5, 0.0, 1.0, // 14
+            -0.5, -0.5, -0.5,    0.5, 0.0, 1.0, // 15
+
+            -0.5, -0.5,  0.5,    0.8, 0.3, 0.6, // 16
+            -0.5, -0.5, -0.5,    0.8, 0.3, 0.6, // 17
+            0.5, -0.5,  0.5,    0.8, 0.5, 0.6, // 18
+            0.5, -0.5, -0.5,    0.8, 0.3, 0.6, // 19
+
+            -0.5, -0.5, -0.5,    0.3, 0.8, 0.5, // 20
+            -0.5,  0.5, -0.5,    0.3, 0.8, 0.5, // 21
+            0.5, -0.5, -0.5,    0.3, 0.8, 0.5, // 22
+            0.5,  0.5, -0.5,    0.3, 0.8, 0.5, // 23
+        ], [
+            // front - red
+            2, 1, 0,
+            3, 2, 0,
+
+            // top - blue
+            4, 5, 6,
+            5, 7, 6,
+
+            // left - green
+            10, 8, 9,
+            10, 9, 11,
+
+            // right - purple
+            15, 13, 12,
+            12, 14, 15,
+
+            // bottom - brown
+            18, 16, 17,
+            19, 18, 17,
+
+            // back
+            23, 22, 21,
+            22, 20, 21,
+        ], 36);
+
+        window.requestAnimationFrame(animate);
+    }
+
+    animate(0);
 }
 
 main();
