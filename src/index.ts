@@ -7,7 +7,6 @@ class Render extends Base {
 
     public constructor() {
         super("vertex-shader-2d", "fragment-shader-2d");
-        console.log(this.gl.canvas.clientHeight, this.gl.canvas.width, 1580 / 3008 );
     }
 
     public init() {
@@ -45,7 +44,9 @@ class Render extends Base {
         this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, FACES_BUFFER);
         this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(faces), this.gl.STATIC_DRAW);
 
-        let matrix = this.projection(this.gl.canvas.clientWidth, this.gl.canvas.clientHeight, 400);
+        // let matrix = this.projection(this.gl.canvas.clientWidth, this.gl.canvas.clientHeight, 400);
+        // let matrix = this.ortho(-2, 2, 1, -1, 1, -1);
+        let matrix = this.perspective(Base.toDegrees(45), this.gl.canvas.clientWidth / this.gl.canvas.clientHeight, 1, 3);
 
         matrix = this.multiply(matrix, this.translationMatrix);
         matrix = this.multiply(matrix, this.xRotation(this.xDegrees));
@@ -64,11 +65,10 @@ class Render extends Base {
 
 function main(): void {
     const cube = new Render();
-    // const cube2 = new Render();
 
     cube.init();
     cube.setScaling();
-    cube.setTransition();
+    cube.setTransition(0, 0, -1.9);
     // cube2.render([
     //     -0.5, -0.5, 0,    1, 0, 0.5,
     //     -0.5,  0.5, 0,    0.1, 0.5, 0.5,
@@ -76,11 +76,15 @@ function main(): void {
     //     0.5, -0.5, 0.0,    0.9, 0.2, 0.5,
     // ], [2, 1, 0, 3, 2, 0], 6);
 
-    const animate = (time: number) => {
+    cube.setXDegrees(10);
+    cube.setYDegrees(30);
+    cube.setZDegrees(10);
+    // cube.setZDegrees(45);
 
-        // cube.setXDegrees(0.05 * time * 0.5);
-        cube.setYDegrees(0.09 * time * 0.7);
-        cube.setZDegrees(0.08 * time * 0.6);
+    const animate = (time: number) => {
+        cube.setXDegrees(0.05 * time * 0.2);
+        cube.setYDegrees(0.09 * time * 0.3);
+        cube.setZDegrees(0.08 * time * 0.2);
 
         cube.render([
             -0.5, -0.5,  0.5,    1.0, 0.0, 0.5, // 0

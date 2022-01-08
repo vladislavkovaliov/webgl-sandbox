@@ -12,6 +12,8 @@ class Base {
 
     protected static toRadian = (degrees: number): number => degrees * Math.PI / 180;
 
+    protected static toDegrees = (rad: number): number => rad * 180 / Math.PI;
+
     protected constructor(vertex: string, fragment: string) {
         this.canvas = document.querySelector("#canvas") as HTMLCanvasElement;
         this.gl = this.canvas.getContext('webgl');
@@ -95,6 +97,11 @@ class Base {
     }
 
     public setScaling(sx: number = 1, sy: number = 1, sz: number = 1): void {
+        if (arguments.length === 1) {
+            this.scalingMatrix = this.multiply(this.identity(), this.scaling(arguments[0], arguments[0], arguments[0]));
+            return;
+        }
+
         this.scalingMatrix = this.multiply(this.identity(), this.scaling(sx, sy, sz));
     }
 
@@ -242,6 +249,45 @@ class Base {
             -s, c, 0, 0,
             0, 0, 1, 0,
             0, 0, 0, 1,
+        ];
+    }
+
+    protected ortho(left: number, right: number, bottom: number, top: number, near: number, far: number): number[] {
+        // return [
+        //     2 / (right - left), 0, 0, 0,
+        //     0, 2 / (top - bottom), 0, 0,
+        //     0, 0, 2 / (near - far), 0,
+        //
+        //     (left + right) / (left - right),
+        //     (bottom + top) / (bottom - top),
+        //     (near + far) / (near - far),
+        //     1,
+        // ];
+
+        return [
+            (top - bottom) / (right - left), 0, 0, 0,
+            0, 1 , 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1,
+        ];
+    }
+
+    protected perspective(fieldOfViewInRadians: number, aspect: number, near: number, far: number): number[] {
+        const f = Math.tan(Math.PI * 0.5 - 0.5 * fieldOfViewInRadians);
+        const rangeInv = 1.0 / (near - far);
+
+        // return [
+        //     f / aspect, 0, 0, 0,
+        //     0, f, 0, 0,
+        //     0, 0, (near + far) * rangeInv, -1,
+        //     0, 0, near * far * rangeInv * 2, 0
+        // ];
+
+        return [
+            f / aspect, 0, 0, 0,
+            0, f, 0, 0,
+            0, 0, (near + far) * rangeInv, -1,
+            0, 0, near * far * rangeInv * 2, 0,
         ];
     }
 }
