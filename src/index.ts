@@ -1,6 +1,9 @@
 
 const { mat4 } = require("gl-matrix");
 
+
+const compose = (...fns: any[]) => (x: any) => fns.reduceRight((acc, fn) => fn(acc), x);
+
 class Base {
     protected gl: any;
     protected canvas: HTMLCanvasElement;
@@ -183,6 +186,15 @@ class Base {
         ];
     }
 
+    protected projection(width: number, height: number, depth: number): number[] {
+        return [
+            height / width, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1,
+        ];
+    }
+
     protected translation(tx: number = 1, ty: number = 1, tz: number = 1): number[] {
         return [
             1,   0,  0, 0,
@@ -245,6 +257,7 @@ class Render extends Base {
 
     public constructor() {
         super("vertex-shader-2d", "fragment-shader-2d");
+        console.log(this.gl.canvas.clientHeight, this.gl.canvas.width, 1580 / 3008 );
     }
 
     public init() {
@@ -282,7 +295,7 @@ class Render extends Base {
         this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, FACES_BUFFER);
         this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(faces), this.gl.STATIC_DRAW);
 
-        let matrix = this.identity();
+        let matrix = this.projection(this.gl.canvas.clientWidth, this.gl.canvas.clientHeight, 400);
 
         matrix = this.multiply(matrix, this.translationMatrix);
         matrix = this.multiply(matrix, this.xRotation(this.xDegrees));
@@ -296,69 +309,6 @@ class Render extends Base {
         this.gl.vertexAttribPointer(this.a_color, 3, this.gl.FLOAT, false, 4 * (3 + 3), 3 * 4);
         this.gl.drawElements(this.gl.TRIANGLES, count, this.gl.UNSIGNED_SHORT, 0);
     }
-
-    // public render() {
-    //     super.render();
-    //
-    //     this.gl.enableVertexAttribArray(this.a_position);
-    //     this.gl.enableVertexAttribArray(this.a_color);
-    //
-    //     const TRIANGLE_VERTEX = this.gl.createBuffer();
-    //     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, TRIANGLE_VERTEX);
-    //     this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.triangle_vertex), this.gl.STATIC_DRAW);
-    //
-    //     const TRIANGLE_FACES = this.gl.createBuffer();
-    //     this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, TRIANGLE_FACES);
-    //     this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.triable_face), this.gl.STATIC_DRAW);
-    //
-    //     let projection = mat4.create();
-    //     let model = mat4.create();
-    //     let view = mat4.create();
-    //
-    //     mat4.perspective(projection, Math.PI / 4, 1, 1, 100);
-    //     mat4.identity(view);
-    //     mat4.identity(model);
-    //
-    //     mat4.rotateX(model, model, 0);
-    //     mat4.lookAt(view, [0.0, 0.0, 10.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
-    //
-    //     let prevTime = 0;
-    //
-    //     const animate = (time: any) => {
-    //         const dt = time - prevTime;
-    //
-    //         // mat4.rotateX(model, model, 0.0005 * dt * 2);
-    //         // mat4.rotateZ(model, model, 0.0005 * dt * 2);
-    //         // mat4.rotateY(model, model, 0.0005 * dt * 2);
-    //
-    //         this.gl.enable(this.gl.DEPTH_TEST);
-    //         this.gl.depthFunc(this.gl.LEQUAL);
-    //         this.gl.clearDepth(1.0);
-    //
-    //         // Clear
-    //         this.gl.clearColor(0.5, 0.5, 0.5, 1.0);
-    //         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-    //
-    //         this.gl.uniformMatrix4fv(this.u_pMatrix, false, projection);
-    //         this.gl.uniformMatrix4fv(this.u_mMatrix, false, model);
-    //         this.gl.uniformMatrix4fv(this.u_vMatrix, false, view);
-    //
-    //         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, TRIANGLE_VERTEX);
-    //
-    //         this.gl.vertexAttribPointer(this.a_position, 3, this.gl.FLOAT, false, 4 * (3 + 3), 0);
-    //         this.gl.vertexAttribPointer(this.a_color, 3, this.gl.FLOAT, false, 4 * (3 + 3), 3 * 4);
-    //
-    //
-    //         this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, TRIANGLE_FACES);
-    //         this.gl.drawElements(this.gl.TRIANGLES, TRIANGLE_FACES.length, this.gl.UNSIGNED_SHORT, 0);
-    //         this.gl.flush();
-    //
-    //         window.requestAnimationFrame(animate)
-    //
-    //     }
-    //
-    //     animate(0);
-    // }
 }
 
 
@@ -374,14 +324,12 @@ function main(): void {
     //     0.5,  0.5, 0.0,    0.5, 0.8, 0.5,
     //     0.5, -0.5, 0.0,    0.9, 0.2, 0.5,
     // ], [2, 1, 0, 3, 2, 0], 6);
-    // cube.setXDegrees(-20);
-    // cube.setYDegrees(-130);
-    const animate = (time: number) => {
-        // console.log(time)
 
-        cube.setXDegrees(0.05 * time * 0.5);
-        // cube.setYDegrees(0.09 * time * 0.7);
-        // cube.setZDegrees(0.08 * time * 0.6);
+    const animate = (time: number) => {
+
+        // cube.setXDegrees(0.05 * time * 0.5);
+        cube.setYDegrees(0.09 * time * 0.7);
+        cube.setZDegrees(0.08 * time * 0.6);
 
         cube.render([
             -0.5, -0.5,  0.5,    1.0, 0.0, 0.5, // 0
