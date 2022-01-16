@@ -253,35 +253,21 @@ class Base {
     }
 
     protected ortho(left: number, right: number, bottom: number, top: number, near: number, far: number): number[] {
-        // return [
-        //     2 / (right - left), 0, 0, 0,
-        //     0, 2 / (top - bottom), 0, 0,
-        //     0, 0, 2 / (near - far), 0,
-        //
-        //     (left + right) / (left - right),
-        //     (bottom + top) / (bottom - top),
-        //     (near + far) / (near - far),
-        //     1,
-        // ];
-
         return [
-            (top - bottom) / (right - left), 0, 0, 0,
-            0, 1 , 0, 0,
-            0, 0, 1, 0,
-            0, 0, 0, 1,
+            2 / (right - left), 0, 0, 0,
+            0, 2 / (bottom - top), 0, 0,
+            0, 0, 1 / (far - near), 0,
+
+            - (left + right) / (left - right),
+            - (bottom + top) / (bottom - top),
+            - near / (far - near),
+            1,
         ];
     }
 
     protected perspective(fieldOfViewInRadians: number, aspect: number, near: number, far: number): number[] {
         const f = Math.tan(Math.PI * 0.5 - 0.5 * fieldOfViewInRadians);
         const rangeInv = 1.0 / (near - far);
-
-        // return [
-        //     f / aspect, 0, 0, 0,
-        //     0, f, 0, 0,
-        //     0, 0, (near + far) * rangeInv, -1,
-        //     0, 0, near * far * rangeInv * 2, 0
-        // ];
 
         return [
             f / aspect, 0, 0, 0,
