@@ -87,9 +87,15 @@ function main(): void {
     // cube.setZDegrees(45);
 
     const animate = (time: number) => {
-        // cube.setXDegrees(0.05 * time * 0.2);
-        // cube.setYDegrees(0.09 * time * 0.3);
-        // cube.setZDegrees(0.08 * time * 0.2);
+        cube.setXDegrees(0.05 * time);
+        cube.setYDegrees(0.09 * time);
+        cube.setZDegrees(0.08 * time);
+
+        cube.setTransition(
+            Math.cos(Math.PI * time * 0.0002),
+            Math.sin(Math.PI * time * 0.0002),
+            -2.5 + 0.5 * Math.sin(Math.PI * time * 0.0002),
+        );
 
         cube.render([
             -0.5, -0.5,  0.5,    1.0, 0.0, 0.5, // 0
@@ -147,7 +153,7 @@ function main(): void {
             22, 20, 21,
         ], 36);
 
-        // window.requestAnimationFrame(animate);
+        window.requestAnimationFrame(animate);
     }
 
     animate(0);
