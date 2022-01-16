@@ -45,12 +45,12 @@ class Render extends Base {
         this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(faces), this.gl.STATIC_DRAW);
 
         // let matrix = this.projection(this.gl.canvas.clientWidth, this.gl.canvas.clientHeight, 400);
-        let matrix = this.ortho(-1, 1, -1, 1, -1, 1);
-        // let matrix = this.perspective(
-        //     Base.toDegrees(30),
-        //     this.gl.canvas.clientWidth / this.gl.canvas.clientHeight,
-        //     1,
-        //     3);
+        // let matrix = this.ortho(-1, 1, -1, 1, -1, 1);
+        let matrix = this.perspective(
+            45,
+            this.gl.canvas.clientWidth / this.gl.canvas.clientHeight,
+            1,
+            3);
 
         matrix = this.multiply(matrix, this.translationMatrix);
 
@@ -72,8 +72,8 @@ function main(): void {
     const cube = new Render();
 
     cube.init();
-    // cube.setScaling(1, 1, 1);
-    cube.setTransition(0, 0, 0);
+    cube.setScaling(0.5);
+    cube.setTransition(-1, 0, -2.5);
     // cube2.render([
     //     -0.5, -0.5, 0,    1, 0, 0.5,
     //     -0.5,  0.5, 0,    0.1, 0.5, 0.5,
@@ -81,9 +81,9 @@ function main(): void {
     //     0.5, -0.5, 0.0,    0.9, 0.2, 0.5,
     // ], [2, 1, 0, 3, 2, 0], 6);
 
-    // cube.setXDegrees(10);
-    // cube.setYDegrees(50);
-    // cube.setZDegrees(10);
+    cube.setXDegrees(10);
+    cube.setYDegrees(50);
+    cube.setZDegrees(10);
     // cube.setZDegrees(45);
 
     const animate = (time: number) => {

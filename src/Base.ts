@@ -265,15 +265,14 @@ class Base {
         ];
     }
 
-    protected perspective(fieldOfViewInRadians: number, aspect: number, near: number, far: number): number[] {
-        const f = Math.tan(Math.PI * 0.5 - 0.5 * fieldOfViewInRadians);
-        const rangeInv = 1.0 / (near - far);
+    protected perspective(angel: number, aspect: number, near: number, far: number): number[] {
+        const fieldOfView = Math.tan(Base.toRadian(angel) * 0.5);
 
         return [
-            f / aspect, 0, 0, 0,
-            0, f, 0, 0,
-            0, 0, (near + far) * rangeInv, -1,
-            0, 0, near * far * rangeInv * 2, 0,
+            1 / (aspect * fieldOfView), 0, 0, 0,
+            0, 1 / fieldOfView, 0, 0,
+            0, 0, far / (far - near), - far * near / (far - near),
+            0, 0, 1, 0,
         ];
     }
 }
