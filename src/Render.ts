@@ -4,6 +4,7 @@ class Render extends Base {
     private a_position: any;
     private a_color: GLint;
     private u_matrix: WebGLUniformLocation;
+    private u_model: WebGLUniformLocation;
 
     public constructor() {
         super("vertex-shader-2d", "fragment-shader-2d");
@@ -14,6 +15,7 @@ class Render extends Base {
         this.a_color    = this.getAttribute(this.shaderProgram, "a_color");
 
         this.u_matrix = this.getUniformLocation(this.shaderProgram, 'u_matrix');
+        this.u_model = this.getUniformLocation(this.shaderProgram, 'u_model');
     }
 
     /**
@@ -54,14 +56,16 @@ class Render extends Base {
             this.gl.canvas.clientWidth / this.gl.canvas.clientHeight,
             1,
             3);
+        let model = this.identity();
 
-        matrix = this.multiply(matrix, this.translationMatrix);
-        matrix = this.multiply(matrix, this.xRotation(this.xDegrees));
-        matrix = this.multiply(matrix, this.yRotation(this.yDegrees));
-        matrix = this.multiply(matrix, this.zRotation(this.zDegrees));
-        matrix = this.multiply(matrix, this.scalingMatrix);
+        model = this.multiply(model, this.translationMatrix);
+        model = this.multiply(model, this.xRotation(this.xDegrees));
+        model = this.multiply(model, this.yRotation(this.yDegrees));
+        model = this.multiply(model, this.zRotation(this.zDegrees));
+        model = this.multiply(model, this.scalingMatrix);
 
         this.gl.uniformMatrix4fv(this.u_matrix, false, matrix);
+        this.gl.uniformMatrix4fv(this.u_model, false, model);
 
         this.gl.drawElements(this.gl.TRIANGLES, count, this.gl.UNSIGNED_SHORT, 0);
     }
