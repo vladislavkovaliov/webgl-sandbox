@@ -374,10 +374,10 @@ class Base {
         const fieldOfView = Math.tan(Base.toRadian(angel) * 0.5);
 
         return [
-            1 / (aspect * fieldOfView), 0, 0, 0,
+            1 / fieldOfView / aspect, 0, 0, 0,
             0, 1 / fieldOfView, 0, 0,
-            0, 0, far / (far - near), - far * near / (far - near),
-            0, 0, 1, 0,
+            0, 0, (far + near) / (near - far), -1,
+            0, 0, 2 * near * far / (near - far), 0,
         ];
     }
 }

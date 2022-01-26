@@ -51,23 +51,32 @@ class Render extends Base {
 
         // let matrix = this.projection(this.gl.canvas.clientWidth, this.gl.canvas.clientHeight, 400);
         // let matrix = this.ortho(-1, 1, -1, 1, -1, 1);
-        let matrix = this.perspective(
-            45,
-            this.gl.canvas.clientWidth / this.gl.canvas.clientHeight,
-            1,
-            3);
-        let model = this.identity();
+        const aspect = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight;
+        let matrix = this.perspective(45, aspect, 2, 6);
 
-        model = this.multiply(model, this.translationMatrix);
-        model = this.multiply(model, this.xRotation(this.xDegrees));
-        model = this.multiply(model, this.yRotation(this.yDegrees));
-        model = this.multiply(model, this.zRotation(this.zDegrees));
-        model = this.multiply(model, this.scalingMatrix);
+        // matrix = this.multiply(matrix, this.translation(1, 1, 0));
 
-        this.gl.uniformMatrix4fv(this.u_matrix, false, matrix);
-        this.gl.uniformMatrix4fv(this.u_model, false, model);
 
-        this.gl.drawElements(this.gl.TRIANGLES, count, this.gl.UNSIGNED_SHORT, 0);
+        for (let i = 1; i <= 1; i++) {
+            let model = this.identity();
+            const angel = Math.PI / i;
+            const x = Math.cos(angel);
+
+            const temp = this.multiply(this.identity(), this.translation(x, 0, 0));
+            model = this.multiply(model, temp);
+
+            model = this.multiply(model, this.translationMatrix);
+            model = this.multiply(model, this.xRotation(this.xDegrees));
+            model = this.multiply(model, this.yRotation(this.yDegrees));
+            model = this.multiply(model, this.zRotation(this.zDegrees));
+            model = this.multiply(model, this.scalingMatrix);
+
+            this.gl.uniformMatrix4fv(this.u_matrix, false, matrix);
+            this.gl.uniformMatrix4fv(this.u_model, false, model);
+
+            this.gl.drawElements(this.gl.TRIANGLES, count, this.gl.UNSIGNED_SHORT, 0);
+        }
+        
     }
 }
 
