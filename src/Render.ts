@@ -27,6 +27,7 @@ class Render extends Base {
      * count - points count
      */
     public render(buffer: number[], faces: number[], count: number) {
+        console.log(this.moveCube)
         super._render();
 
         this.gl.enableVertexAttribArray(this.a_position);
@@ -50,25 +51,33 @@ class Render extends Base {
         this.gl.vertexAttribPointer(this.a_color, 3, this.gl.FLOAT, false, 4 * (3 + 3), 3 * 4);
 
         // let matrix = this.projection(this.gl.canvas.clientWidth, this.gl.canvas.clientHeight, 400);
-        // let matrix = this.ortho(-1, 1, -1, 1, -1, 1);
+        // let matrix = this.ortho(-2, 2, -1, 1, -2, 2);
         const aspect = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight;
-        let matrix = this.perspective(45, aspect, 2, 6);
-
-        // matrix = this.multiply(matrix, this.translation(1, 1, 0));
+        let matrix = this.perspective(60, aspect, 1, 200);
 
 
-        for (let i = 1; i <= 1; i++) {
-            let model = this.identity();
-            const angel = Math.PI / i;
-            const x = Math.cos(angel);
+        let camera = this.identity();
 
-            const temp = this.multiply(this.identity(), this.translation(x, 0, 0));
-            model = this.multiply(model, temp);
+        camera = this.multiply(camera, this.yRotation(this.yDegrees));
+        camera = this.multiply(camera, this.xRotation(this.xDegrees));
+        camera = this.multiply(camera, this.zRotation(this.zDegrees));
+        camera = this.multiply(camera, this.translationMatrix);
+        matrix = this.multiply(matrix, this.inverse(camera));
 
-            model = this.multiply(model, this.translationMatrix);
-            model = this.multiply(model, this.xRotation(this.xDegrees));
-            model = this.multiply(model, this.yRotation(this.yDegrees));
-            model = this.multiply(model, this.zRotation(this.zDegrees));
+
+        for (let i = 0; i < 5; ++i) {
+            const angel = 2 * i * Math.PI / 5 ;
+            const x = Math.cos(angel) * 2;
+            const z = Math.sin(angel) * 2;
+
+            const translateMatrix = this.multiply(this.identity(), this.translation(x, 0, z));
+
+            let model = this.identity();            
+            model = this.multiply(model, translateMatrix);
+            // model = this.multiply(model, this.translationMatrix);
+            // model = this.multiply(model, this.xRotation(this.xDegrees));
+            // model = this.multiply(model, this.yRotation(this.yDegrees));
+            // model = this.multiply(model, this.zRotation(this.zDegrees));
             model = this.multiply(model, this.scalingMatrix);
 
             this.gl.uniformMatrix4fv(this.u_matrix, false, matrix);
@@ -76,7 +85,6 @@ class Render extends Base {
 
             this.gl.drawElements(this.gl.TRIANGLES, count, this.gl.UNSIGNED_SHORT, 0);
         }
-        
     }
 }
 

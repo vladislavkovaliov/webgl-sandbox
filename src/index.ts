@@ -8,7 +8,7 @@ function main(): void {
 
     cube.init();
     cube.setScaling(0.5);
-    cube.setTransition(0, 0, -2.5);
+    cube.setTransition(0, 0, 9);
     // cube2.render([
     //     -0.5, -0.5, 0,    1, 0, 0.5,
     //     -0.5,  0.5, 0,    0.1, 0.5, 0.5,
@@ -23,11 +23,11 @@ function main(): void {
         cube.setYDegrees(0.09 * time);
         cube.setZDegrees(0.08 * time);
 
-        cube.setTransition(
-            Math.cos(Math.PI * time * 0.0002),
-            Math.sin(Math.PI * time * 0.0002),
-            -2.5,
-        );
+        // cube.setTransition(
+            // Math.cos(Math.PI * time * 0.0002),
+            // Math.sin(Math.PI * time * 0.0002),
+            // -2.5,
+        // );
 
         cube.render(object.cube.buffer, object.cube.faces, object.cube.faces.length);
 

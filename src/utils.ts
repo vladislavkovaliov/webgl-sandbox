@@ -72,3 +72,4 @@ export const makeControl = (cube: Render) => (event: KeyboardEvent) => {
 
     cube.render(object.cube.buffer, object.cube.faces, object.cube.faces.length);
 };
+
