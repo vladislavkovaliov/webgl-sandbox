@@ -380,6 +380,40 @@ class Base {
             0, 0, 2 * near * far / (near - far), 0,
         ];
     }
+
+    protected cross(a: number[], b: number[]): number[] {
+        return [a[1] * b[2] - a[2] * b[1],
+                a[2] * b[0] - a[0] * b[2],
+                a[0] * b[1] - a[1] * b[0]];
+    }
+
+    protected subtractVectors(a: number[], b: number[]): number[] {
+        return [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+    }
+
+    protected normalize(v: number[]): number[] {
+        const length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+        // check there is no divide by zero
+        if (length > 0.00001) {
+            return [v[0] / length, v[1] / length, v[2] / length];
+        } else {
+            return [0, 0, 0];
+        }
+    }
+
+    protected lookAt(cameraPosition: number[], target: number[], up: number[]): number[] {
+        const zAxis = this.normalize(
+            this.subtractVectors(cameraPosition, target));
+        const xAxis = this.normalize(this.cross(up, zAxis));
+        const yAxis = this.normalize(this.cross(zAxis, xAxis));
+
+        return [
+            xAxis[0], xAxis[1], xAxis[2], 0,
+            yAxis[0], yAxis[1], yAxis[2], 0,
+            zAxis[0], zAxis[1], zAxis[2], 0,
+            cameraPosition[0], cameraPosition[1], cameraPosition[2], 1,
+        ];
+    }
 }
 
 export default Base;

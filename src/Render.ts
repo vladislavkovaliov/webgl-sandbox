@@ -27,7 +27,6 @@ class Render extends Base {
      * count - points count
      */
     public render(buffer: number[], faces: number[], count: number) {
-        console.log(this.moveCube)
         super._render();
 
         this.gl.enableVertexAttribArray(this.a_position);
@@ -62,8 +61,19 @@ class Render extends Base {
         camera = this.multiply(camera, this.xRotation(this.xDegrees));
         camera = this.multiply(camera, this.zRotation(this.zDegrees));
         camera = this.multiply(camera, this.translationMatrix);
-        matrix = this.multiply(matrix, this.inverse(camera));
 
+        const firstCubePosition = [0, 0, 2];
+        const cameraPosition = [
+            camera[12],
+            camera[13],
+            camera[14],
+        ];
+
+        const up = [0, 1, 0];
+        const cameraMatrix = this.lookAt(cameraPosition, firstCubePosition, up);
+
+        // matrix = this.multiply(matrix, this.inverse(camera));
+        matrix = this.multiply(matrix, this.inverse(cameraMatrix));
 
         for (let i = 0; i < 5; ++i) {
             const angel = 2 * i * Math.PI / 5 ;
@@ -78,6 +88,7 @@ class Render extends Base {
             // model = this.multiply(model, this.xRotation(this.xDegrees));
             // model = this.multiply(model, this.yRotation(this.yDegrees));
             // model = this.multiply(model, this.zRotation(this.zDegrees));
+            console.log(i, 'x = ', x, 'z = ', z);
             model = this.multiply(model, this.scalingMatrix);
 
             this.gl.uniformMatrix4fv(this.u_matrix, false, matrix);
