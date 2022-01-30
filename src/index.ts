@@ -1,4 +1,3 @@
-import Base from "./Base";
 import { object } from "./model";
 import Render from "./Render";
 import {makeControl} from "./utils";
@@ -8,7 +7,7 @@ function main(): void {
 
     cube.init();
     cube.setScaling(0.8);
-    cube.setTransition(8, 9, 9);
+    cube.setTransition(9, 9, 9);
     // cube2.render([
     //     -0.5, -0.5, 0,    1, 0, 0.5,
     //     -0.5,  0.5, 0,    0.1, 0.5, 0.5,
@@ -23,11 +22,12 @@ function main(): void {
         // cube.setYDegrees(0.09 * time);
         // cube.setZDegrees(0.8 * time);
 
-        cube.setTransition(
-            7 * Math.sin(time * 0.001),
-            8,
-            9 * Math.cos(time * 0.001),
-        );
+        // cube.setTransition(
+        //     9 * Math.sin(time * 0.001),
+        //     9,
+        //     9 * Math.cos(time * 0.001),
+        // );
+
 
         cube.render(object.cube.buffer, object.cube.faces, object.cube.faces.length);
 
@@ -50,6 +50,36 @@ function main(): void {
     });
 
     document.addEventListener("keypress", makeControl(cube));
+
+    let isPressing: boolean = false;
+
+    document.getElementById("canvas").addEventListener("mousedown", () => {
+        isPressing = true;
+    });
+
+    document.getElementById("canvas").addEventListener("mouseup", (event: MouseEvent) => {
+        isPressing = false;
+    });
+
+    document.getElementById("canvas").addEventListener("mousemove", (event: MouseEvent) => {
+        if (isPressing === false) {
+            return;
+        }
+
+        cube.setYDegrees(cube.getYDegrees() + event.movementX * 0.2);
+        cube.setXDegrees(cube.getXDegrees() + event.movementY * 0.2);
+
+        cube.render(object.cube.buffer, object.cube.faces, object.cube.faces.length);
+    });
+
+    document.getElementById("canvas").addEventListener("mousewheel", (event: WheelEvent) => {
+        const [x,y,z] = cube.getTranslation();
+        cube.setTransition(
+            x,y,z + Math.round(event.deltaY * 0.2) / 10,
+        );
+
+        cube.render(object.cube.buffer, object.cube.faces, object.cube.faces.length);
+    });
 }
 
 main();

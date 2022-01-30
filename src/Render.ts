@@ -80,15 +80,17 @@ class Render extends Base {
             const x = Math.cos(angel) * 2;
             const z = Math.sin(angel) * 2;
 
-            const translateMatrix = this.multiply(this.identity(), this.translation(x, 0, z));
+            const translateMatrix = this.multiply(this.identity(), this.translation(x, (angel + 0.5) / 4, z));
 
-            let model = this.identity();            
+            let model = this.identity();
             model = this.multiply(model, translateMatrix);
             // model = this.multiply(model, this.translationMatrix);
             // model = this.multiply(model, this.xRotation(this.xDegrees));
             // model = this.multiply(model, this.yRotation(this.yDegrees));
             // model = this.multiply(model, this.zRotation(this.zDegrees));
-            console.log(i, 'x = ', x, 'z = ', z);
+            // console.log(i, 'x = ', x, 'z = ', z);
+            const [sx, _, sz] = this.getScaling();
+            this.setScaling(sx, (angel + 0.5) / 2, sz);
             model = this.multiply(model, this.scalingMatrix);
 
             this.gl.uniformMatrix4fv(this.u_matrix, false, matrix);
