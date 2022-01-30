@@ -2,18 +2,28 @@ import { object } from "./model";
 import Render from "./Render";
 import {makeControl} from "./utils";
 
+const dat = require("dat.gui");
+console.log(dat);
 function main(): void {
     const cube = new Render();
+    cube.attachCamera("perspective");
 
     cube.init();
     cube.setScaling(0.8);
-    cube.setTransition(9, 9, 9);
-    // cube2.render([
-    //     -0.5, -0.5, 0,    1, 0, 0.5,
-    //     -0.5,  0.5, 0,    0.1, 0.5, 0.5,
-    //     0.5,  0.5, 0.0,    0.5, 0.8, 0.5,
-    //     0.5, -0.5, 0.0,    0.9, 0.2, 0.5,
-    // ], [2, 1, 0, 3, 2, 0], 6);
+    cube.cameraTranslateX(0);
+    cube.cameraTranslateY(0);
+    cube.cameraTranslateZ(9);
+
+
+    const gui = new dat.GUI();
+
+    gui.add(cube.camera, 'rotationY').min(-360).max(360);
+    gui.add(cube.camera, 'rotationX').min(-360).max(360);
+    gui.add(cube.camera, 'rotationZ').min(-360).max(360);
+
+    gui.add(cube.camera, 'translateX').min(-360).max(360).step(0.00001);
+    gui.add(cube.camera, 'translateY').min(-360).max(360).step(0.00001);
+    gui.add(cube.camera, 'translateZ').min(-360).max(360).step(0.00001);
 
     let animationID: number | null = null;
 
@@ -31,9 +41,9 @@ function main(): void {
 
         cube.render(object.cube.buffer, object.cube.faces, object.cube.faces.length);
 
-        if (animationID) {
+        // if (animationID) {
             window.requestAnimationFrame(animate);
-        }
+        // }
     }
 
     animate(0);
@@ -66,19 +76,16 @@ function main(): void {
             return;
         }
 
-        cube.setYDegrees(cube.getYDegrees() + event.movementX * 0.2);
-        cube.setXDegrees(cube.getXDegrees() + event.movementY * 0.2);
-
-        cube.render(object.cube.buffer, object.cube.faces, object.cube.faces.length);
+        cube.cameraRotationX(event.movementY);
+        cube.cameraRotationY(event.movementX);
+        cube.cameraRotationZ(event.movementY);
     });
 
     document.getElementById("canvas").addEventListener("mousewheel", (event: WheelEvent) => {
         const [x,y,z] = cube.getTranslation();
         cube.setTransition(
-            x,y,z + Math.round(event.deltaY * 0.2) / 10,
+            x,y,z + Math.round(event.deltaY) / 10,
         );
-
-        cube.render(object.cube.buffer, object.cube.faces, object.cube.faces.length);
     });
 }
 

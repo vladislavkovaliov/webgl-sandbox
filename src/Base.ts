@@ -1,4 +1,4 @@
-
+import { toRadian } from "./utils";
 
 class Base {
     protected gl: any;
@@ -9,10 +9,6 @@ class Base {
     protected xDegrees: number;
     protected yDegrees: number;
     protected zDegrees: number;
-
-    protected static toRadian = (degrees: number): number => degrees * Math.PI / 180;
-
-    protected static toDegrees = (rad: number): number => rad * 180 / Math.PI;
 
     protected constructor(vertex: string, fragment: string) {
         this.canvas = document.querySelector("#canvas") as HTMLCanvasElement;
@@ -322,8 +318,8 @@ class Base {
     }
 
     protected xRotation(degrees: number): number[] {
-        const c = Math.cos(Base.toRadian(degrees));
-        const s = Math.sin(Base.toRadian(degrees));
+        const c = Math.cos(toRadian(degrees));
+        const s = Math.sin(toRadian(degrees));
 
         return [
             1, 0, 0, 0,
@@ -334,8 +330,8 @@ class Base {
     }
 
     protected yRotation(degrees: number): number[] {
-        const c = Math.cos(Base.toRadian(degrees));
-        const s = Math.sin(Base.toRadian(degrees));
+        const c = Math.cos(toRadian(degrees));
+        const s = Math.sin(toRadian(degrees));
 
         return [
             c, 0, -s, 0,
@@ -346,8 +342,8 @@ class Base {
     }
 
     protected zRotation(degrees: number): number[] {
-        const c = Math.cos(Base.toRadian(degrees));
-        const s = Math.sin(Base.toRadian(degrees));
+        const c = Math.cos(toRadian(degrees));
+        const s = Math.sin(toRadian(degrees));
 
         return [
             c, s, 0, 0,
@@ -371,7 +367,7 @@ class Base {
     }
 
     protected perspective(angel: number, aspect: number, near: number, far: number): number[] {
-        const fieldOfView = Math.tan(Base.toRadian(angel) * 0.5);
+        const fieldOfView = Math.tan(toRadian(angel) * 0.5);
 
         return [
             1 / fieldOfView / aspect, 0, 0, 0,

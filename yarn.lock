@@ -1077,6 +1077,11 @@ dargs@^6.1.0:
   resolved "https://registry.yarnpkg.com/dargs/-/dargs-6.1.0.tgz#1f3b9b56393ecf8caa7cbfd6c31496ffcfb9b272"
   integrity sha512-5dVBvpBLBnPwSsYXqfybFyehMmC/EenKEcf23AhCTgTf48JFBbmJKqoZBsERDnjL0FyiVTYWdFsRfTLHxLyKdQ==
 
+dat.gui@^0.7.7:
+  version "0.7.7"
+  resolved "https://registry.yarnpkg.com/dat.gui/-/dat.gui-0.7.7.tgz#7f96dbd21621a76385203659aebfa264ee6ae89b"
+  integrity sha512-sRl/28gF/XRC5ywC9I4zriATTsQcpSsRG7seXCPnTkK8/EQMIbCu5NPMpICLGxX9ZEUvcXR3ArLYCtgreFoMDw==
+
 dateformat@^3.0.3:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/dateformat/-/dateformat-3.0.3.tgz#a6e37499a4d9a9cf85ef5872044d62901c9889ae"
