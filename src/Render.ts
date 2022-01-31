@@ -14,7 +14,7 @@ class Render extends Base {
         rotationX: 0,
         rotationY: 0,
         rotationZ: 0,
-            translateX: 0,
+        translateX: 0,
         translateY: 0,
         translateZ: 0,
     };
@@ -88,10 +88,10 @@ class Render extends Base {
 
         let camera = this.identity();
 
+        const cameraTranslation = this.translation(this.camera.translateX, this.camera.translateY, this.camera.translateZ)
         camera = this.multiply(camera, this.yRotation(this.camera.rotationY));
         camera = this.multiply(camera, this.xRotation(this.camera.rotationX));
         camera = this.multiply(camera, this.zRotation(this.camera.rotationZ));
-        const cameraTranslation = this.translation(this.camera.translateX, this.camera.translateY, this.camera.translateZ)
         camera = this.multiply(camera, cameraTranslation);
 
         const firstCubePosition = [0, 0, 2];
