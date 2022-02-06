@@ -1,11 +1,7 @@
 import {object} from "./model";
 import Render from "./Render";
 
-const compose = (...fns: any[]) => (x: any) => fns.reduceRight((acc, fn) => fn(acc), x);
-
-export default {
-    compose,
-};
+export const compose = (...fns: any[]) => (x: any) => fns.reduceRight((acc, fn) => fn(acc), x);
 
 export const makeControl = (cube: Render) => (event: KeyboardEvent) => {
     const key: string = event.key.toLowerCase();
@@ -72,4 +68,8 @@ export const makeControl = (cube: Render) => (event: KeyboardEvent) => {
 
     cube.render(object.cube.buffer, object.cube.faces, object.cube.faces.length);
 };
+
+export const  toRadian = (degrees: number): number => degrees * Math.PI / 180;
+
+export const  toDegrees = (rad: number): number => rad * 180 / Math.PI;
 

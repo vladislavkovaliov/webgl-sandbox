@@ -1,6 +1,24 @@
 import Base from "./Base";
+import Camera from "./Camera";
 
 class Render extends Base {
+    public sen = 0.2;
+    public camera: {
+        rotationX: number,
+        rotationY: number,
+        rotationZ: number,
+        translateX: number,
+        translateY: number,
+        translateZ: number,
+    } = {
+        rotationX: 0,
+        rotationY: 0,
+        rotationZ: 0,
+        translateX: 0,
+        translateY: 0,
+        translateZ: 0,
+    };
+    private cameraType: "perspective" | "ortho" = "ortho";
     private a_position: any;
     private a_color: GLint;
     private u_matrix: WebGLUniformLocation;
@@ -49,18 +67,32 @@ class Render extends Base {
         this.gl.vertexAttribPointer(this.a_position, 3, this.gl.FLOAT, false, 4 * (3 + 3), 0);
         this.gl.vertexAttribPointer(this.a_color, 3, this.gl.FLOAT, false, 4 * (3 + 3), 3 * 4);
 
-        // let matrix = this.projection(this.gl.canvas.clientWidth, this.gl.canvas.clientHeight, 400);
-        // let matrix = this.ortho(-2, 2, -1, 1, -2, 2);
-        const aspect = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight;
-        let matrix = this.perspective(60, aspect, 1, 200);
+        let matrix = this.identity();
 
+        switch (this.cameraType) {
+            case "ortho": {
+                // TODO: make them passable.
+                matrix = this.ortho(-2, 2, -1, 1, -2, 2);
+                break;
+            }
+            case "perspective": {
+                const aspect = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight;
+                // TODO: make them passable.
+                matrix = this.perspective(60, aspect, 1, 200);
+                break;
+            }
+            default: {
+                throw Error("CameraType is not defined.");
+            }
+        }
 
         let camera = this.identity();
 
-        camera = this.multiply(camera, this.yRotation(this.yDegrees));
-        camera = this.multiply(camera, this.xRotation(this.xDegrees));
-        camera = this.multiply(camera, this.zRotation(this.zDegrees));
-        camera = this.multiply(camera, this.translationMatrix);
+        const cameraTranslation = this.translation(this.camera.translateX, this.camera.translateY, this.camera.translateZ)
+        camera = this.multiply(camera, this.yRotation(this.camera.rotationY));
+        camera = this.multiply(camera, this.xRotation(this.camera.rotationX));
+        camera = this.multiply(camera, this.zRotation(this.camera.rotationZ));
+        camera = this.multiply(camera, cameraTranslation);
 
         const firstCubePosition = [0, 0, 2];
         const cameraPosition = [
@@ -72,7 +104,6 @@ class Render extends Base {
         const up = [0, 1, 0];
         const cameraMatrix = this.lookAt(cameraPosition, firstCubePosition, up);
 
-        // matrix = this.multiply(matrix, this.inverse(camera));
         matrix = this.multiply(matrix, this.inverse(cameraMatrix));
 
         for (let i = 0; i < 5; ++i) {
@@ -98,6 +129,38 @@ class Render extends Base {
 
             this.gl.drawElements(this.gl.TRIANGLES, count, this.gl.UNSIGNED_SHORT, 0);
         }
+    }
+
+    public attachCamera(cameraType: "perspective" | "ortho"): void {
+        this.setCameraType(cameraType);
+    }
+
+    public setCameraType(type: "perspective" | "ortho"): void {
+        this.cameraType = type;
+    }
+
+    public cameraRotationX(value: number): void {
+        this.camera.rotationX = this.camera.rotationX + value;
+    }
+
+    public cameraRotationY(value: number): void {
+        this.camera.rotationY = this.camera.rotationY + value;
+    }
+
+    public cameraRotationZ(value: number): void {
+        this.camera.rotationZ = this.camera.rotationZ + value;
+    }
+
+    public cameraTranslateX(value: number): void {
+        this.camera.translateX = this.camera.translateX + value;
+    }
+
+    public cameraTranslateY(value: number): void {
+        this.camera.translateY = this.camera.translateY + value;
+    }
+
+    public cameraTranslateZ(value: number): void {
+        this.camera.translateZ = this.camera.translateZ + value;
     }
 }
 
