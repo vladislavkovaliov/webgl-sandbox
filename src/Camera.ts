@@ -1,32 +1,52 @@
-import { toRadian } from "./utils";
+import {identity, multiply, perspective, translation, xRotation, yRotation, zRotation} from "./Matrix";
+import {action, computed, makeObservable, observable} from "mobx";
 
-class Camera  {
-    private rotationX: number = 0;
-    private rotationY: number = 0;
-    private rotationZ: number = 0;
+export class Camera {
+    public view: number[];
+    public rotationX: number;
+    public rotationY: number;
+    public rotationZ: number;
+    public translateX: number;
+    public translateY: number;
+    public translateZ: number;
 
-    public setRotationX(value: number): void {
-        this.rotationX = value;
+    public constructor() {
+        makeObservable(this, {
+            translateZ: observable,
+            setTranslateZ: action,
+            rotation: computed,
+            translate: computed,
+        });
+
+        this.view = identity();
+
+        this.rotationX = 0;
+        this.rotationY = 0;
+        this.rotationZ = 0;
+        this.translateX = 0;
+        this.translateY = 0;
+        this.translateZ = 0;
     }
 
-    public setRotationY(value: number): void {
-        this.rotationY = value;
+    public perspective = (angel: number, aspect: number, near: number, far: number) => {
+        this.view = perspective(angel, aspect, near, far);
     }
 
-    public setRotationZ(value: number): void {
-        this.rotationZ = value;
+    public setTranslateZ = (value: number): void => {
+        this.translateZ = value;
     }
 
-    protected perspective(angel: number, aspect: number, near: number, far: number): number[] {
-        const fieldOfView = Math.tan(toRadian(angel) * 0.5);
+    public get translate(): number[] {
+        return translation(this.translateX, this.translateY, this.translateZ);
+    };
 
-        return [
-            1 / fieldOfView / aspect, 0, 0, 0,
-            0, 1 / fieldOfView, 0, 0,
-            0, 0, (far + near) / (near - far), -1,
-            0, 0, 2 * near * far / (near - far), 0,
-        ];
-    }
+    public get rotation(): number[] {
+        let result = identity();
+
+        result = multiply(result, yRotation(this.rotationY));
+        result = multiply(result, xRotation(this.rotationX));
+        result = multiply(result, zRotation(this.rotationZ));
+
+        return result;
+    };
 }
-
-export default Camera;
