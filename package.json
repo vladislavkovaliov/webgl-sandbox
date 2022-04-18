@@ -4,7 +4,7 @@
   "description": "My webpack project",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --coverage",
     "build": "webpack --mode=production --node-env=production",
     "build:dev": "webpack --mode=development",
     "build:prod": "webpack --mode=production --node-env=production",
@@ -15,11 +15,14 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/jest": "^27.4.1",
     "@webpack-cli/generators": "^2.4.1",
     "css-loader": "^6.5.1",
     "html-webpack-plugin": "^5.5.0",
+    "jest": "^27.5.1",
     "mini-css-extract-plugin": "^2.4.5",
     "style-loader": "^3.3.1",
+    "ts-jest": "^27.1.4",
     "ts-loader": "^9.2.6",
     "typescript": "^4.5.4",
     "webpack": "^5.68.0",
@@ -34,6 +37,8 @@
     "dat.gui": "^0.7.7",
     "gl-mat4": "^1.2.0",
     "gl-matrix": "^3.4.3",
-    "mobx": "^6.3.13"
+    "mobx": "^6.3.13",
+    "sonarqube-scanner": "^2.8.1",
+    "ts-node": "^10.7.0"
   }
 }
