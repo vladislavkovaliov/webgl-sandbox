@@ -11,8 +11,11 @@ function main(): void {
     const cube = new Render();
     const canvas = document.querySelector("#canvas");
     const camera = new Camera();
+    const secondCamera = new Camera();
+
 
     camera.perspective(60, canvas.clientWidth / canvas.clientHeight, 1, 200);
+    secondCamera.perspective(60, canvas.clientWidth / canvas.clientHeight, 1, 200);
 
     cube.init();
 
