@@ -11,6 +11,7 @@ function main(): void {
     const cube = new Render();
     const canvas = document.querySelector("#canvas");
     const camera = new Camera();
+    const camera = new Camera();
     const secondCamera = new Camera();
 
 
@@ -18,7 +19,7 @@ function main(): void {
     secondCamera.perspective(60, canvas.clientWidth / canvas.clientHeight, 1, 200);
 
     cube.init();
-
+    // -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=vladislavkovaliov_webgl-sandbox c4f65df295fd98b0b1b6dcd2a8043d592842d543
     cube.attachCamera(camera);
     cube.setScaling(0.8);
 
